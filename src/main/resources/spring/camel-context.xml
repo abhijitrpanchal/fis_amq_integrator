@@ -17,7 +17,7 @@
         <route id="generate-order-route" streamCache="true">
             <from id="route-timer" uri="timer:order?period=3000"/>
             <to id="_to1" uri="restlet:http://simple-emp-timerecords-lademoproject.apps.dev.openshift.opentlc.com/timerecords/{empId}?restletMethod=get"/>
-            <to id="route-to-incoming-orders" uri="amq:incomingOrders"/>
+            <to id="route-to-outgoing-orders" uri="amq:incomingOrders"/>
         </route>
         <!--
           This route consumes messages from the JMS queue incomingOrders on the ActiveMQ broker within the ESB.
