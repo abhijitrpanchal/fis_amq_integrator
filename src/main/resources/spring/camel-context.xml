@@ -16,12 +16,7 @@
         -->
         <route id="generate-order-route" streamCache="true">
             <from id="route-timer" uri="timer:order?period=3000"/>
-            <bean id="route-new-order" method="generateOrder" ref="orderGenerator"/>
-            <setHeader headerName="Exchange.FILE_NAME" id="route-set-order-header">
-                <!-- defining the header containing a simulated file name -->
-                <method method="generateFileName" ref="orderGenerator"/>
-            </setHeader>
-            <log id="route-log-order" message="Generating order ${file:name}"/>
+            <to id="_to1" uri="restlet:http://simple-emp-timerecords-lademoproject.apps.dev.openshift.opentlc.com/timerecords/{empId}?restletMethod=get"/>
             <to id="route-to-incoming-orders" uri="amq:incomingOrders"/>
         </route>
         <!--
@@ -34,23 +29,7 @@
         -->
         <route id="jms-cbr-route" streamCache="true">
             <from id="route-from-incoming-orders" uri="amq:incomingOrders"/>
-            <choice id="route-choose-country">
-                <when id="route-when-uk">
-                    <xpath>/order/customer/country = 'UK'</xpath>
-                    <log id="route-log-uk" message="Sending order ${file:name} to the UK"/>
-                    <!-- Put additional routing rules for UK messages here -->
-                </when>
-                <when id="route-when-us">
-                    <xpath>/order/customer/country = 'US'</xpath>
-                    <log id="route-log-us" message="Sending order ${file:name} to the US"/>
-                    <!-- Put additional routing rules for US messages here -->
-                </when>
-                <otherwise id="route-when-other-country">
-                    <log id="route-log-other" message="Sending order ${file:name} to another country"/>
-                    <!-- Put additional routing rules for other messages here -->
-                </otherwise>
-            </choice>
-            <log id="route-final-log" message="Done processing ${file:name}"/>
+            <to id="_to1" uri="http://simple-employee-details-lademoproject.apps.dev.openshift.opentlc.com/employees/{empId}?restletMethod=get"/>
         </route>
     </camelContext>
 </beans>
